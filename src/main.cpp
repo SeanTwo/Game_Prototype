@@ -6,12 +6,10 @@
 #include <raylib.h>
 #include <string>
 #include <algorithm>
-#include <time.h>
 #include "game_window.h"
 #include "game_character.h"
 
 #include <array>
-
 
 int main()
 {
@@ -30,7 +28,6 @@ int main()
 
     characters[1].set_pos(25.0f, 25.0f);
 
-    clock_t last_time = clock();
     while (!WindowShouldClose())
     {
         BeginDrawing();
@@ -41,15 +38,9 @@ int main()
         DrawLine((int)slime.get_dest_rect().x, 0, (int)slime.get_dest_rect().x, game_window.height, GRAY);
         DrawLine(0, (int)slime.get_dest_rect().y, game_window.width, (int)slime.get_dest_rect().y, GRAY);
         
-        //Delta time calculations
-        clock_t current_time = clock();
-        float dt = (float)(current_time - last_time) / CLOCKS_PER_SEC;
-        last_time = current_time;
-
-        // Skip calculations if frame is too fast (0 dt)
-        if (dt > 0.0f) {
-            characters[0].move(down, 50.0f * dt);
-        }
+        
+        characters[1].move(down, 50.0f * GetFrameTime());
+        
         EndDrawing();
     }
 
