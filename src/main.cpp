@@ -27,7 +27,11 @@ int main()
         BeginDrawing();
         ClearBackground(default_bg);
         
-        DrawTexturePro(slime.get_texture(), slime.get_src_rect(), slime.get_dest_rect(), slime.get_origin(), slime.get_rotation(), WHITE);
+        slime.draw();
+        slime.rotate();
+
+        DrawLine((int)slime.get_dest_rect().x, 0, (int)destRec.x, game_window.height, GRAY);
+        DrawLine(0, (int)slime.get_dest_rect().y, game_window.width, (int)destRec.y, GRAY);
 
         EndDrawing();
     }

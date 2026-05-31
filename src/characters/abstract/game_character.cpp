@@ -12,7 +12,7 @@ game_character::game_character(
     frame_height = (float)char_texture.height;
     source_rec = { initial_position.x, initial_position.y, frame_width, frame_height };
     dest_rec = { screen.width*screen.multiplier[0], screen.height*screen.multiplier[1], frame_width*frame_mult[0], frame_height*frame_mult[1] };
-    Vector2 origin = { frame_width, frame_height };
+    origin = { frame_width, frame_height };
     rotation = 0.0f;
 }
 
