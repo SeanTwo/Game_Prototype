@@ -12,6 +12,7 @@ class game_character
         float frame_width;
         float frame_height;
         float rotation;
+        int chara_id;
         Texture2D char_texture;
     public:
         // Constructors
@@ -19,7 +20,8 @@ class game_character
             std::string texture_path,
             Vector2 initial_position,
             const window_config& screen,
-            std::array<float, 2> frame_mult
+            std::array<float, 2> frame_mult,
+            int chara_id
         );
 
         // Class Functions
@@ -39,4 +41,7 @@ class game_character
         Vector2 get_origin();
 
         float get_rotation();
+
+        // Unloader
+        void unload_character();
 };

@@ -19,7 +19,7 @@ int main()
     
     Color default_bg = {0, 0, 0, 255};
 
-    game_character slime = game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f});
+    game_character slime = game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1);
 
 
     while (!WindowShouldClose())
@@ -28,10 +28,9 @@ int main()
         ClearBackground(default_bg);
         
         slime.draw();
-        slime.rotate();
 
-        DrawLine((int)slime.get_dest_rect().x, 0, (int)destRec.x, game_window.height, GRAY);
-        DrawLine(0, (int)slime.get_dest_rect().y, game_window.width, (int)destRec.y, GRAY);
+        DrawLine((int)slime.get_dest_rect().x, 0, (int)slime.get_dest_rect().x, game_window.height, GRAY);
+        DrawLine(0, (int)slime.get_dest_rect().y, game_window.width, (int)slime.get_dest_rect().y, GRAY);
 
         EndDrawing();
     }

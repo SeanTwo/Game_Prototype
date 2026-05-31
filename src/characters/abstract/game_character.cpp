@@ -4,7 +4,8 @@ game_character::game_character(
     std::string texture_path,
     Vector2 initial_position,
     const window_config& screen,
-    std::array<float, 2> frame_mult
+    std::array<float, 2> frame_mult,
+    int chara_id
 )
 {
     char_texture = LoadTexture(texture_path.c_str());
@@ -14,6 +15,7 @@ game_character::game_character(
     dest_rec = { screen.width*screen.multiplier[0], screen.height*screen.multiplier[1], frame_width*frame_mult[0], frame_height*frame_mult[1] };
     origin = { frame_width, frame_height };
     rotation = 0.0f;
+    this->chara_id = chara_id;
 }
 
 void game_character::draw()
@@ -56,5 +58,9 @@ float game_character::get_rotation()
     return rotation;
 }
 
+void game_character::unload_character()
+{
+    UnloadTexture(char_texture);
+}
 
 
