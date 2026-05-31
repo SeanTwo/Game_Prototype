@@ -33,17 +33,22 @@ void game_character::set_rotation(float rotation_angle)
     rotation = rotation_angle;
 }
 
-void game_character::move(direction dir, float speed)
+void game_character::move(direction dir, float speed, float dt)
 {
+    int movement = speed * dt;
     switch (dir) {
-        case 1:
-            dest_rec.x += speed;
-        case 2:
-            dest_rec.x -= speed;
-        case 3:
-            dest_rec.y -= speed;
-        case 4:
-            dest_rec.y += speed;
+        case direction::left:
+            dest_rec.x -= movement;
+            break;
+        case direction::right:
+            dest_rec.x += movement;
+            break;
+        case direction::up:
+            dest_rec.y -= movement;
+            break;
+        case direction::down:
+            dest_rec.y += movement;
+            break;
     }
 }
 
@@ -76,6 +81,16 @@ Vector2 game_character::get_origin()
 float game_character::get_rotation()
 {
     return rotation;
+}
+
+float game_character::get_texture_width()
+{
+    return frame_width;
+}
+
+float game_character:: get_texture_height()
+{
+    return frame_height;
 }
 
 void game_character::unload_character()

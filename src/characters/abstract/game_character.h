@@ -32,7 +32,7 @@ class game_character
 
         void set_rotation(float rotation_angle);
 
-        void move(direction dir, float speed);
+        void move(direction dir, float speed, float dt);
 
         void set_pos(float x, float y);
 
@@ -46,6 +46,10 @@ class game_character
         Vector2 get_origin();
 
         float get_rotation();
+
+        float get_texture_width();
+
+        float get_texture_height();
 
         // Unloader
         void unload_character();

@@ -4,6 +4,7 @@
 #define NOUSER
 
 #include <raylib.h>
+#include <iostream>
 #include <string>
 #include <algorithm>
 #include "game_window.h"
@@ -22,11 +23,18 @@ int main()
     
     Color default_bg = {0, 0, 0, 255};
 
-    std::array<game_character, 2> characters = { game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1), game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1) };
+    std::array<game_character, 2> characters = { 
+        game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1),
+        game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 2) 
+    };
 
-    game_character slime = characters[0];
+    game_character& player = characters[0];
 
     characters[1].set_pos(25.0f, 25.0f);
+
+    Rectangle dest_rec = { game_window.width*game_window.multiplier[0], game_window.height*game_window.multiplier[1], 16.0f*4.0f, 16.0f*4.0f };
+
+    const int speed = 64.0f;
 
     while (!WindowShouldClose())
     {
@@ -35,12 +43,22 @@ int main()
         
         std::for_each(characters.begin(), characters.end(), [](game_character& entity) { entity.draw(); });
         
-        DrawLine((int)slime.get_dest_rect().x, 0, (int)slime.get_dest_rect().x, game_window.height, GRAY);
-        DrawLine(0, (int)slime.get_dest_rect().y, game_window.width, (int)slime.get_dest_rect().y, GRAY);
+        DrawLine((int)dest_rec.x, 0, (int)dest_rec.x, game_window.height, GRAY);
+        DrawLine(0, (int)dest_rec.y, game_window.width, (int)dest_rec.y, GRAY);
+
+        std::string coords = std::to_string(characters[0].get_dest_rect().x) + " " + std::to_string(characters[0].get_dest_rect().y);
+        DrawText("Character Coordinates", 20, 20, 20, WHITE);
+        DrawText(coords.c_str(), 20, 60, 20, WHITE);
         
+        //characters[1].move(down, 50.0f, GetFrameTime());
+        if (IsKeyDown(KEY_A)) player.move(left, speed, GetFrameTime());
+        else if (IsKeyDown(KEY_D)) player.move(right, speed, GetFrameTime());
         
-        characters[1].move(down, 50.0f * GetFrameTime());
-        
+        if (IsKeyDown(KEY_S)) characters[0].move(down, speed, GetFrameTime());
+        else if (IsKeyDown(KEY_W)) player.move(up, speed, GetFrameTime());
+
+        if (IsKeyDown(KEY_R)) player.set_pos(game_window.width/2 - player.get_texture_width(), game_window.height/2 - player.get_texture_height());;
+
         EndDrawing();
     }
 
