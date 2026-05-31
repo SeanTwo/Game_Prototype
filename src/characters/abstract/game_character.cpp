@@ -33,6 +33,26 @@ void game_character::set_rotation(float rotation_angle)
     rotation = rotation_angle;
 }
 
+void game_character::move(direction dir, float speed)
+{
+    switch (dir) {
+        case 1:
+            dest_rec.x += speed;
+        case 2:
+            dest_rec.x -= speed;
+        case 3:
+            dest_rec.y -= speed;
+        case 4:
+            dest_rec.y += speed;
+    }
+}
+
+void game_character::set_pos(float x, float y)
+{
+    dest_rec.x = x;
+    dest_rec.y = y;
+}
+
 Texture2D game_character::get_texture()
 {
     return char_texture;

@@ -5,13 +5,18 @@
 
 #include <raylib.h>
 #include <string>
+#include <algorithm>
+#include <time.h>
 #include "game_window.h"
 #include "game_character.h"
+
+#include <array>
+
 
 int main()
 {
     std::string window_name = "Game Test";
-    window_config game_window = {800, 600, {0.5f, 0.5f}, window_name.c_str()};
+    window_config game_window = {640, 480, {0.5f, 0.5f}, window_name.c_str()};
 
     InitWindow(game_window.width, game_window.height, game_window.window_name);
 	DisableEventWaiting();
@@ -19,21 +24,36 @@ int main()
     
     Color default_bg = {0, 0, 0, 255};
 
-    game_character slime = game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1);
+    std::array<game_character, 2> characters = { game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1), game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1) };
 
+    game_character slime = characters[0];
 
+    characters[1].set_pos(25.0f, 25.0f);
+
+    clock_t last_time = clock();
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(default_bg);
         
-        slime.draw();
-
+        std::for_each(characters.begin(), characters.end(), [](game_character& entity) { entity.draw(); });
+        
         DrawLine((int)slime.get_dest_rect().x, 0, (int)slime.get_dest_rect().x, game_window.height, GRAY);
         DrawLine(0, (int)slime.get_dest_rect().y, game_window.width, (int)slime.get_dest_rect().y, GRAY);
+        
+        //Delta time calculations
+        clock_t current_time = clock();
+        float dt = (float)(current_time - last_time) / CLOCKS_PER_SEC;
+        last_time = current_time;
 
+        // Skip calculations if frame is too fast (0 dt)
+        if (dt > 0.0f) {
+            characters[0].move(down, 50.0f * dt);
+        }
         EndDrawing();
     }
+
+    std::for_each(characters.begin(), characters.end(), [](game_character& entity) { entity.unload_character(); });
     
     CloseWindow();
     return 0;

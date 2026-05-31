@@ -2,6 +2,7 @@
 #include <string>
 #include <array>
 #include "game_window.h"
+#include "direction.h"
 
 class game_character
 {
@@ -30,6 +31,10 @@ class game_character
         void rotate();
 
         void set_rotation(float rotation_angle);
+
+        void move(direction dir, float speed);
+
+        void set_pos(float x, float y);
 
         // Getter Functions
         Texture2D get_texture();
