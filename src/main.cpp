@@ -4,13 +4,13 @@
 #define NOUSER
 
 #include <raylib.h>
-#include <iostream>
 #include <string>
 #include <algorithm>
+#include <vector>
+#include <format>
+#include <iostream>
 #include "game_window.h"
 #include "game_character.h"
-
-#include <vector>
 
 int main()
 {
@@ -24,8 +24,8 @@ int main()
     Color default_bg = {0, 0, 0, 255};
 
     std::vector<game_character> characters = { 
-        game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1),
-        game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 2) 
+        game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1, 16, 16),
+        game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 2, 12, 9)
     };
 
     game_character& player = characters[0];
@@ -34,7 +34,11 @@ int main()
 
     const int speed = 64.0f;
 
-    player.set_pos(game_window.width/2 - player.get_texture_width(), game_window.height/2 - player.get_texture_height());
+    int origin_x = 0.0f;
+
+    player.set_pos(game_window.width/2 - player.get_entity_width(), game_window.height/2 - player.get_entity_height());
+
+    float last_time = GetFrameTime();
 
     while (!WindowShouldClose())
     {
@@ -46,7 +50,7 @@ int main()
         DrawLine((int)dest_rec.x, 0, (int)dest_rec.x, game_window.height, GRAY);
         DrawLine(0, (int)dest_rec.y, game_window.width, (int)dest_rec.y, GRAY);
 
-        std::string coords = std::to_string(characters[0].get_dest_rect().x) + " " + std::to_string(characters[0].get_dest_rect().y);
+        std::string coords = std::to_string(player.get_dest_rect().x) + " " + std::to_string(player.get_dest_rect().y);
         DrawText("Character Coordinates", 20, 20, 20, WHITE);
         DrawText(coords.c_str(), 20, 60, 20, WHITE);
         
@@ -60,7 +64,10 @@ int main()
         {player.move(up, speed, GetFrameTime());}
 
         if (IsKeyDown(KEY_R))
-        {player.set_pos(game_window.width/2 - player.get_texture_width(), game_window.height/2 - player.get_texture_height());};
+        {player.set_pos(game_window.width/2 - player.get_entity_width(), game_window.height/2 - player.get_entity_height());};
+
+        if (IsKeyPressed(KEY_V))
+        {player.set_spritesheet_frame({1>>player.get_spritesheet_col(), 0});}
 
         EndDrawing();
     }

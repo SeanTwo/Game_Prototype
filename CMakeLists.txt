@@ -22,6 +22,7 @@ target_include_directories(rayLibTest PRIVATE
     src/characters/abstract
     src/configuration
     src/configuration/world
+    src/configuration/sprites
 )
 
 target_link_libraries(rayLibTest PRIVATE 

@@ -3,6 +3,7 @@
 #include <array>
 #include "game_window.h"
 #include "direction.h"
+#include "sprite_matrix.h"
 
 class game_character
 {
@@ -10,19 +11,25 @@ class game_character
         Rectangle source_rec;
         Rectangle dest_rec;
         Vector2 origin;
-        float frame_width;
-        float frame_height;
+        sprite_matrix current_spritesheet_pos; // the current position of the spritesheet being used for animation
+        float frame_width; // width of a single frame in the spritesheet in pixels
+        float frame_height; // height of a single frame in the spritesheet in pixels
         float rotation;
         int chara_id;
         Texture2D char_texture;
+
+        void set_spritesheet_pos(float x, float y);
+
     public:
         // Constructors
         game_character(
             std::string texture_path,
             Vector2 initial_position,
             const window_config& screen,
-            std::array<float, 2> frame_mult,
-            int chara_id
+            std::array<float, 2> sprite_scale,
+            int chara_id,
+            int width_pixels,
+            int height_pixels
         );
 
         // Class Functions
@@ -36,6 +43,8 @@ class game_character
 
         void set_pos(float x, float y);
 
+        void set_spritesheet_frame(sprite_matrix sprite_pos);
+
         // Getter Functions
         Texture2D get_texture();
 
@@ -47,9 +56,15 @@ class game_character
 
         float get_rotation();
 
-        float get_texture_width();
+        float get_entity_width();
 
-        float get_texture_height();
+        float get_entity_height();
+
+        sprite_matrix get_spritesheet_pos();
+
+        int get_spritesheet_row();
+
+        int get_spritesheet_col();
 
         // Unloader
         void unload_character();
