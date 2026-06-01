@@ -18,8 +18,9 @@ int main()
     window_config game_window = {640, 480, window_name.c_str()};
 
     InitWindow(game_window.width, game_window.height, game_window.window_name);
-	DisableEventWaiting();
+	DisableEventWaiting(); // Disable waiting for events on EndDrawing() to allow for smoother input handling
     SetTargetFPS(60);
+    SetExitKey(KEY_NULL); // Disable default exit key (ESC) to prevent exiting using it
     
     Color default_bg = {0, 0, 0, 255};
 
@@ -36,8 +37,10 @@ int main()
 
     int origin_x = 0.0f;
 
-    std::for_each(characters.begin(), characters.end(), [game_window](game_character& entity) { entity.set_pos((game_window.width / 2 - entity.get_entity_width()), (game_window.height / 2 - entity.get_entity_height())); });
-
+    // Center Each character on the screen (based on their sprite size)
+    std::for_each(characters.begin(), characters.end(), [game_window](game_character& entity) 
+        { entity.set_pos((game_window.width / 2 - entity.get_entity_width()), (game_window.height / 2 - entity.get_entity_height())); }
+    );
 
     float last_time = GetFrameTime();
 
