@@ -15,7 +15,7 @@
 int main()
 {
     std::string window_name = "Game Test";
-    window_config game_window = {640, 480, {0.5f, 0.5f}, window_name.c_str()};
+    window_config game_window = {640, 480, window_name.c_str()};
 
     InitWindow(game_window.width, game_window.height, game_window.window_name);
 	DisableEventWaiting();
@@ -30,13 +30,14 @@ int main()
 
     game_character& player = characters[0];
 
-    Rectangle dest_rec = { game_window.width*game_window.multiplier[0], game_window.height*game_window.multiplier[1], 16.0f*4.0f, 16.0f*4.0f };
+    Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
 
     const int speed = 64.0f;
 
     int origin_x = 0.0f;
 
-    player.set_pos(game_window.width/2 - player.get_entity_width(), game_window.height/2 - player.get_entity_height());
+    std::for_each(characters.begin(), characters.end(), [game_window](game_character& entity) { entity.set_pos((game_window.width / 2 - entity.get_entity_width()), (game_window.height / 2 - entity.get_entity_height())); });
+
 
     float last_time = GetFrameTime();
 

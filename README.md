@@ -1,5 +1,5 @@
-This project uses raylib and I used MSVC VS 17 2022 to build and develop it
-due to that I can't give exact instructions for other compilers like G++
+This project uses raylib and I used MSVC VS 17 2022 to build and develop it.
+Due to this I can't give exact instructions for other compilers like G++
 
 To build first you need to download Raylib 6.0 and build from source in its root folder
 then in order to build assuming the Raylib download path is C:/raylib

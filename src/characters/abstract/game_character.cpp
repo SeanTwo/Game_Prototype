@@ -15,7 +15,7 @@ game_character::game_character(
     frame_width = (float)width_pixels;
     frame_height = (float)height_pixels;
     source_rec = { initial_position.x, initial_position.y, frame_width, frame_height };
-    dest_rec = { screen.width*screen.multiplier[0], screen.height*screen.multiplier[1], frame_width*sprite_scale[0], frame_height*sprite_scale[1] };
+    dest_rec = { screen.width*0.5f, screen.height*0.5f, frame_width*sprite_scale[0], frame_height*sprite_scale[1] };
     origin = { frame_width, frame_height };
     rotation = 0.0f;
     this->chara_id = chara_id;
