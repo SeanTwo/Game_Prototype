@@ -12,13 +12,17 @@ class game_character
         Rectangle dest_rec;
         Vector2 origin;
         sprite_matrix current_spritesheet_pos; // the current position of the spritesheet being used for animation
-        float frame_width; // width of a single frame in the spritesheet in pixels
-        float frame_height; // height of a single frame in the spritesheet in pixels
+        float sprite_width; // width of a single frame in the spritesheet in pixels
+        float sprite_height; // height of a single frame in the spritesheet in pixels
         float rotation;
         int chara_id;
+        float x;
+        float y;
+        float world_grid_size;
         Texture2D char_texture;
 
         void set_spritesheet_pos(float x, float y);
+        void normalize_coordinates();
 
     public:
         // Constructors
@@ -29,7 +33,8 @@ class game_character
             std::array<float, 2> sprite_scale,
             int chara_id,
             int width_pixels,
-            int height_pixels
+            int height_pixels,
+            int world_grid_size
         );
 
         // Class Functions
@@ -46,6 +51,17 @@ class game_character
         void set_spritesheet_frame(sprite_matrix sprite_pos);
 
         // Getter Functions
+        sprite_matrix get_spritesheet_pos();
+
+        int get_spritesheet_row();
+
+        int get_spritesheet_col();
+
+        float get_x_coord();
+
+        float get_y_coord();
+
+        // Getters for raylib based character attributes
         Texture2D get_texture();
 
         Rectangle get_src_rect();
@@ -56,16 +72,21 @@ class game_character
 
         float get_rotation();
 
-        float get_entity_width();
+        float get_sprite_width();
 
-        float get_entity_height();
+        float get_sprite_height();
 
-        sprite_matrix get_spritesheet_pos();
+        float get_bounding_rect_x();
 
-        int get_spritesheet_row();
+        float get_bounding_rect_y();
 
-        int get_spritesheet_col();
+        float& get_bounding_rect_ref_x();
+
+        float& get_bounding_rect_ref_y();
 
         // Unloader
         void unload_character();
+
+        // Destructor
+        ~game_character();
 };

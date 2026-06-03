@@ -9,6 +9,7 @@
 #include <vector>
 #include <format>
 #include <iostream>
+#include <math.h>
 #include "game_window.h"
 #include "game_character.h"
 
@@ -23,24 +24,32 @@ int main()
     SetExitKey(KEY_NULL); // Disable default exit key (ESC) to prevent exiting using it
     
     Color default_bg = {0, 0, 0, 255};
+    int world_grid_size = 16; // The size of a single tile in the world in pixels
 
-    std::vector<game_character> characters = { 
-        game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1, 16, 16),
-        game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 2, 12, 9)
+    std::vector<game_character*> characters = { 
+        new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1, 16, 16, world_grid_size),
+        new game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 2, 12, 9, world_grid_size)
     };
 
-    game_character& player = characters[0];
+    int current_char = 0;
+
+    game_character& player = *characters[current_char];
 
     Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
 
-    const int speed = 64.0f;
+    const int speed = 10.0f;
 
-    int origin_x = 0.0f;
+    Camera2D camera = { 0 };
+    camera.target = { player.get_bounding_rect_x() + 20.0f, player.get_bounding_rect_y() + 20.0f };
+    camera.offset = { game_window.width*0.5f, game_window.height*0.5f };
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
 
-    // Center Each character on the screen (based on their sprite size)
+    /* Center Each character on the screen (based on their sprite size)
     std::for_each(characters.begin(), characters.end(), [game_window](game_character& entity) 
         { entity.set_pos((game_window.width / 2 - entity.get_entity_width()), (game_window.height / 2 - entity.get_entity_height())); }
     );
+    */
 
     float last_time = GetFrameTime();
 
@@ -48,27 +57,31 @@ int main()
     {
         BeginDrawing();
         ClearBackground(default_bg);
-    
-        std::for_each(characters.begin(), characters.end(), [](game_character entity) { entity.draw(); });
         
-        DrawLine((int)dest_rec.x, 0, (int)dest_rec.x, game_window.height, GRAY);
-        DrawLine(0, (int)dest_rec.y, game_window.width, (int)dest_rec.y, GRAY);
+        camera.target = { player.get_bounding_rect_x() + 20.0f, player.get_bounding_rect_y() + 20.0f };
 
-        std::string coords = std::to_string(player.get_dest_rect().x) + " " + std::to_string(player.get_dest_rect().y);
+        // Draw all objects for the world in camera
+        BeginMode2D(camera);
+            player.draw();
+            characters[1]->draw();
+        EndMode2D();
+
+        std::string coords = std::to_string(player.get_x_coord()) + " " + std::to_string(player.get_y_coord());
         DrawText("Character Coordinates", 20, 20, 20, WHITE);
         DrawText(coords.c_str(), 20, 60, 20, WHITE);
+        DrawText(std::to_string(current_char).c_str(), 20, 100, 20, WHITE);
         
         if (IsKeyDown(KEY_A))
         {player.move(left, speed, GetFrameTime());}
         else if (IsKeyDown(KEY_D))
         {player.move(right, speed, GetFrameTime());}
         else if (IsKeyDown(KEY_S))
-        {characters[0].move(down, speed, GetFrameTime());}
+        {player.move(down, speed, GetFrameTime());}
         else if (IsKeyDown(KEY_W))
         {player.move(up, speed, GetFrameTime());}
 
         if (IsKeyDown(KEY_R))
-        {player.set_pos(game_window.width/2 - player.get_entity_width(), game_window.height/2 - player.get_entity_height());};
+        {player.set_pos(0, 0);};
 
         if (IsKeyPressed(KEY_V))
         {player.set_spritesheet_frame({1>>player.get_spritesheet_col(), 0});}
@@ -76,7 +89,7 @@ int main()
         EndDrawing();
     }
 
-    std::for_each(characters.begin(), characters.end(), [](game_character& entity) { entity.unload_character(); });
+    std::for_each(characters.begin(), characters.end(), [](game_character* entity) { delete entity; });
     
     CloseWindow();
     return 0;
