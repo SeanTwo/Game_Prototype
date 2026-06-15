@@ -49,13 +49,13 @@ int main()
     //Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
 
     // Controls player Speed
-    const int speed = 4.0f;
-    const int default_zoom = 4.0f;
+    const float speed = 4.0f;
+    const float default_zoom = 4.0f;
 
     // Camera Initialization
     Camera2D camera = { 0 };
-    camera.target = { player->get_bounding_rect_x() + 20.0f, player->get_bounding_rect_y() + 20.0f };
-    camera.offset = { game_window.width*0.5f, game_window.height*0.5f };
+    camera.target = { player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), player->get_bounding_rect_y() };
+    camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f };
     camera.rotation = 0.0f;
     camera.zoom = default_zoom;
 
@@ -72,19 +72,22 @@ int main()
         BeginDrawing();
         ClearBackground(default_bg);
         
-        camera.target = { player->get_bounding_rect_x() + 20.0f, player->get_bounding_rect_y() + 20.0f };
+        camera.target = { player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), player->get_bounding_rect_y() };
 
         // Draw all objects for the world in camera
         BeginMode2D(camera);
+            Vector2 mouse_world_pos = GetMousePosition();
             std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
 
             player->draw();
         EndMode2D();
 
+        std::string mouse_pos = std::to_string(mouse_world_pos.x) + " " + std::to_string(mouse_world_pos.y);
+
         std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
         DrawText("Character Coordinates", 20, 20, 20, WHITE);
         DrawText(coords.c_str(), 20, 60, 20, WHITE);
-        DrawText(std::to_string(camera.zoom).c_str(), 20, 100, 20, WHITE);
+        DrawText(mouse_pos.c_str(), 20, 100, 20, WHITE);
         DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 120, 20, WHITE);
         
         if (IsKeyDown(KEY_A))
@@ -109,10 +112,7 @@ int main()
         if (IsKeyPressed(KEY_F4))
         {
             ToggleFullscreen();
-            if(IsWindowFullscreen)
-            { camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f }; }
-            else // Set it back to default width and height
-            { camera.offset = { game_window.width*0.5f, game_window.height*0.5f }; }
+            camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f };
             camera.zoom = default_zoom * (float)GetScreenHeight()/game_window.height;
         }
 
