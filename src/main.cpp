@@ -19,6 +19,7 @@ int main()
 {
     std::string window_name = "Game Test";
     window_config game_window = {640, 480, window_name.c_str()};
+    SetConfigFlags(FLAG_VSYNC_HINT);
 
     InitWindow(game_window.width, game_window.height, game_window.window_name);
 	DisableEventWaiting(); // Disable waiting for events on EndDrawing() to allow for smoother input handling
