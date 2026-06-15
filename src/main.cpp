@@ -9,9 +9,11 @@
 #include <vector>
 #include <format>
 #include <iostream>
+#include <array>
 #include <math.h>
 #include "game_window.h"
 #include "game_character.h"
+#include "tile.h"
 
 int main()
 {
@@ -26,21 +28,28 @@ int main()
     Color default_bg = {0, 0, 0, 255};
     int world_grid_size = 16; // The size of a single tile in the world in pixels
 
+    std::array<float, 2> sprite_scale = {4.0f, 4.0f};
+
     std::vector<game_character*> characters = { 
-        new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 1, 16, 16, world_grid_size),
-        new game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, {4.0f, 4.0f}, 2, 12, 9, world_grid_size)
+        new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size),
+        new game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, sprite_scale, 2, 12, 9, world_grid_size)
+    };
+
+    std::vector<tile*> tiles = { 
+        new tile("resources/textures/spritesheets/test_spritesheet.png", {0.0f, 0.0f}, game_window, world_grid_size, {0, 0}, sprite_scale),
+        new tile("resources/textures/spritesheets/test_spritesheet.png", {16.0f, 0.0f}, game_window, world_grid_size, {1, 0}, sprite_scale)
     };
 
     int current_char = 0;
 
-    game_character& player = *characters[current_char];
+    game_character* player = characters[current_char];
 
-    Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
+    //Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
 
     const int speed = 10.0f;
 
     Camera2D camera = { 0 };
-    camera.target = { player.get_bounding_rect_x() + 20.0f, player.get_bounding_rect_y() + 20.0f };
+    camera.target = { player->get_bounding_rect_x() + 20.0f, player->get_bounding_rect_y() + 20.0f };
     camera.offset = { game_window.width*0.5f, game_window.height*0.5f };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
@@ -58,38 +67,41 @@ int main()
         BeginDrawing();
         ClearBackground(default_bg);
         
-        camera.target = { player.get_bounding_rect_x() + 20.0f, player.get_bounding_rect_y() + 20.0f };
+        camera.target = { player->get_bounding_rect_x() + 20.0f, player->get_bounding_rect_y() + 20.0f };
 
         // Draw all objects for the world in camera
         BeginMode2D(camera);
-            player.draw();
+            std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
             characters[1]->draw();
+
+            player->draw();
         EndMode2D();
 
-        std::string coords = std::to_string(player.get_x_coord()) + " " + std::to_string(player.get_y_coord());
+        std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
         DrawText("Character Coordinates", 20, 20, 20, WHITE);
         DrawText(coords.c_str(), 20, 60, 20, WHITE);
         DrawText(std::to_string(current_char).c_str(), 20, 100, 20, WHITE);
         
         if (IsKeyDown(KEY_A))
-        {player.move(left, speed, GetFrameTime());}
+        {player->move(left, speed, GetFrameTime());}
         else if (IsKeyDown(KEY_D))
-        {player.move(right, speed, GetFrameTime());}
+        {player->move(right, speed, GetFrameTime());}
         else if (IsKeyDown(KEY_S))
-        {player.move(down, speed, GetFrameTime());}
+        {player->move(down, speed, GetFrameTime());}
         else if (IsKeyDown(KEY_W))
-        {player.move(up, speed, GetFrameTime());}
+        {player->move(up, speed, GetFrameTime());}
 
         if (IsKeyDown(KEY_R))
-        {player.set_pos(0, 0);};
+        {player->set_pos(0, 0);};
 
         if (IsKeyPressed(KEY_V))
-        {player.set_spritesheet_frame({1>>player.get_spritesheet_col(), 0});}
+        {player->set_spritesheet_frame({1>>player->get_spritesheet_col(), 0});}
 
         EndDrawing();
     }
 
     std::for_each(characters.begin(), characters.end(), [](game_character* entity) { delete entity; });
+    std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { delete tile; });
     
     CloseWindow();
     return 0;

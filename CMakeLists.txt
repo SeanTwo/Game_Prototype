@@ -11,6 +11,7 @@ find_package(raylib REQUIRED)
 add_executable(rayLibTest
     src/main.cpp
     src/characters/abstract/game_character.cpp
+    src/world/tile.cpp
 )
 
 set_target_properties(rayLibTest PROPERTIES
@@ -23,6 +24,7 @@ target_include_directories(rayLibTest PRIVATE
     src/configuration
     src/configuration/world
     src/configuration/sprites
+    src/world
 )
 
 target_link_libraries(rayLibTest PRIVATE 
@@ -33,7 +35,6 @@ target_link_libraries(rayLibTest PRIVATE
     shell32.lib
 )
 
-# Only link raylib. vcpkg's raylib target brings its own GLFW and Win32 system libs!
 target_link_libraries(rayLibTest PRIVATE 
     raylib
 )

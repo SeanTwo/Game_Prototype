@@ -12,13 +12,13 @@ game_character::game_character(
     int world_grid_size // World grid size is the size of a single tile in the world in pixels
 )
 {
-    char_texture = LoadTexture(texture_path.c_str());
-    sprite_width = (float)width_pixels;
-    sprite_height = (float)height_pixels;
-    source_rec = { 0.0f, 0.0f, sprite_width, sprite_height };
-    dest_rec = { sprite_scale[0]*2+initial_position.x, sprite_scale[1]*2+initial_position.y, sprite_width*sprite_scale[0], sprite_height*sprite_scale[1] }; // Sets the initial position of the character based on the initial position passed in, but also accounts for the scaling of the sprite and centers the character on that position
-    origin = { sprite_width, sprite_height };
-    rotation = 0.0f;
+    this->char_texture = LoadTexture(texture_path.c_str());
+    this->sprite_width = (float)width_pixels;
+    this->sprite_height = (float)height_pixels;
+    this->source_rec = { 0.0f, 0.0f, sprite_width, sprite_height };
+    this->dest_rec = { sprite_scale[0]*2+initial_position.x, sprite_scale[1]*2+initial_position.y, sprite_width*sprite_scale[0], sprite_height*sprite_scale[1] }; // Sets the initial position of the character based on the initial position passed in, but also accounts for the scaling of the sprite and centers the character on that position
+    this->origin = { sprite_width, sprite_height };
+    this->rotation = 0.0f;
     this->chara_id = chara_id;
     this->world_grid_size = world_grid_size;
     this->current_spritesheet_pos = { 0, 0 }; // Always default to the first row and column of the spritesheet
