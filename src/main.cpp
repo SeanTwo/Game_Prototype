@@ -93,22 +93,30 @@ int main()
         {player->move(up, speed, GetFrameTime());}
 
         if (IsKeyDown(KEY_R))
-        {player->set_pos(0, 0);};
+        {player->set_pos(0, 0);}
 
+        // Camera controls
         if (IsKeyDown(KEY_P))
         {
             if(camera.zoom < 6.0f)
             {camera.zoom += 0.1f;}
-        };
-
+        }
         if (IsKeyDown(KEY_O))
         {
             if(camera.zoom > 0.1f)
             {camera.zoom -= 0.1f;}
-        };
+        }
+        if (IsKeyPressed(KEY_I))
+        { camera.zoom = 1.0f; }
 
         if (IsKeyPressed(KEY_F4))
-        {ToggleFullscreen();}
+        {
+            ToggleFullscreen();
+            if(IsWindowFullscreen)
+            { camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f }; }
+            else // Set it back to default width and height
+            { camera.offset = { game_window.width*0.5f, game_window.height*0.5f }; }
+        }
 
 
         if (IsKeyPressed(KEY_V))
