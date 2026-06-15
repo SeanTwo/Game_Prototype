@@ -36,8 +36,8 @@ int main()
     };
 
     std::vector<tile*> tiles = { 
-        new tile("resources/textures/spritesheets/test_spritesheet.png", {0.0f, 0.0f}, game_window, world_grid_size, {0, 0}, sprite_scale),
-        new tile("resources/textures/spritesheets/test_spritesheet.png", {16.0f, 0.0f}, game_window, world_grid_size, {1, 0}, sprite_scale)
+        new tile("resources/textures/spritesheets/test_spritesheet.png", 0, 0, game_window, world_grid_size, {0, 0}, sprite_scale),
+        new tile("resources/textures/spritesheets/test_spritesheet.png", 1, 0, game_window, world_grid_size, {1, 0}, sprite_scale)
     };
 
     int current_char = 0;
@@ -84,11 +84,11 @@ int main()
         
         if (IsKeyDown(KEY_A))
         {player->move(left, speed, GetFrameTime());}
-        else if (IsKeyDown(KEY_D))
+        if (IsKeyDown(KEY_D))
         {player->move(right, speed, GetFrameTime());}
-        else if (IsKeyDown(KEY_S))
+        if (IsKeyDown(KEY_S))
         {player->move(down, speed, GetFrameTime());}
-        else if (IsKeyDown(KEY_W))
+        if (IsKeyDown(KEY_W))
         {player->move(up, speed, GetFrameTime());}
 
         if (IsKeyDown(KEY_R))

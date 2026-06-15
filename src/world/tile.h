@@ -19,7 +19,8 @@ class tile
         // Constructors
         tile(
             std::string texture_path,
-            Vector2 position,
+            int x,
+            int y,
             const window_config& screen,
             int world_grid_size,
             sprite_matrix current_spritesheet_pos,
@@ -28,7 +29,8 @@ class tile
 
         tile(
             std::string texture_path,
-            Vector2 position,
+            int x,
+            int y,
             const window_config& screen,
             int world_grid_size,
             sprite_matrix current_spritesheet_pos,
