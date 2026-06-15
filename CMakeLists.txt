@@ -8,17 +8,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(raylib REQUIRED)
 
-add_executable(rayLibTest
+add_executable(origin
     src/main.cpp
     src/characters/abstract/game_character.cpp
     src/world/tile.cpp
 )
 
-set_target_properties(rayLibTest PROPERTIES
+set_target_properties(origin PROPERTIES
     WIN32_EXECUTABLE $<$<CONFIG:Release>:TRUE>
 )
 
-target_include_directories(rayLibTest PRIVATE
+target_include_directories(origin PRIVATE
     src
     src/characters/abstract
     src/configuration
@@ -27,7 +27,7 @@ target_include_directories(rayLibTest PRIVATE
     src/world
 )
 
-target_link_libraries(rayLibTest PRIVATE 
+target_link_libraries(origin PRIVATE 
     raylib
     winmm.lib
     gdi32.lib
@@ -35,6 +35,6 @@ target_link_libraries(rayLibTest PRIVATE
     shell32.lib
 )
 
-target_link_libraries(rayLibTest PRIVATE 
+target_link_libraries(origin PRIVATE 
     raylib
 )

@@ -17,7 +17,7 @@
 
 int main()
 {
-    std::string window_name = "Game Test";
+    std::string window_name = "Origin";
     window_config game_window = {640, 480, window_name.c_str()};
     SetConfigFlags(FLAG_VSYNC_HINT);
 
