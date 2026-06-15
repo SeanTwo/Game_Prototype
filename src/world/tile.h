@@ -13,12 +13,12 @@ class tile
         sprite_matrix current_spritesheet_pos; // the current tile being used in the spritesheet
         float rotation;
         float sprite_dim; // width and height of a single tile in the spritesheet in pixels
-        Texture2D sprite_sheet; // the spritesheet texture for all tiles in the world
+        Texture2D* sprite_sheet; // the spritesheet texture for all tiles in the world
 
     public:
         // Constructors
         tile(
-            std::string texture_path,
+            Texture2D* sprite_sheet,
             int x,
             int y,
             const window_config& screen,
@@ -28,7 +28,7 @@ class tile
         );
 
         tile(
-            std::string texture_path,
+            Texture2D* sprite_sheet,
             int x,
             int y,
             const window_config& screen,
@@ -66,10 +66,4 @@ class tile
         Rectangle get_dest_rect();
 
         Vector2 get_origin();
-
-        // Unloader
-        void unload_tile();
-
-        // Destructor
-        ~tile();
 };

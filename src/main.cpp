@@ -31,12 +31,14 @@ int main()
     std::array<float, 2> sprite_scale = {4.0f, 4.0f};
 
     std::vector<game_character*> characters = { 
-        new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size),
+        new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size)
     };
-
+    
+    Texture2D current_spritesheet = LoadTexture("resources/textures/spritesheets/test_spritesheet.png");
     std::vector<tile*> tiles = { 
-        new tile("resources/textures/spritesheets/test_spritesheet.png", 0, 0, game_window, world_grid_size, {0, 0}, sprite_scale),
-        new tile("resources/textures/spritesheets/test_spritesheet.png", 1, 0, game_window, world_grid_size, {1, 0}, sprite_scale)
+        new tile(&current_spritesheet, 0, 0, game_window, world_grid_size, {0, 0}, sprite_scale),
+        new tile(&current_spritesheet, 1, 0, game_window, world_grid_size, {1, 0}, sprite_scale),
+        new tile(&current_spritesheet, 1, 1, game_window, world_grid_size, {1, 0}, sprite_scale),
     };
 
     int current_char = 0;
@@ -71,7 +73,6 @@ int main()
         // Draw all objects for the world in camera
         BeginMode2D(camera);
             std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
-            characters[1]->draw();
 
             player->draw();
         EndMode2D();
@@ -79,7 +80,7 @@ int main()
         std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
         DrawText("Character Coordinates", 20, 20, 20, WHITE);
         DrawText(coords.c_str(), 20, 60, 20, WHITE);
-        DrawText(std::to_string(current_char).c_str(), 20, 100, 20, WHITE);
+        DrawText(std::to_string(camera.zoom).c_str(), 20, 100, 20, WHITE);
         
         if (IsKeyDown(KEY_A))
         {player->move(left, speed, GetFrameTime());}
@@ -93,6 +94,22 @@ int main()
         if (IsKeyDown(KEY_R))
         {player->set_pos(0, 0);};
 
+        if (IsKeyDown(KEY_P))
+        {
+            if(camera.zoom < 6.0f)
+            {camera.zoom += 0.1f;}
+        };
+
+        if (IsKeyDown(KEY_O))
+        {
+            if(camera.zoom > 0.1f)
+            {camera.zoom -= 0.1f;}
+        };
+
+        if (IsKeyPressed(KEY_F4))
+        {ToggleFullscreen();}
+
+
         if (IsKeyPressed(KEY_V))
         {player->set_spritesheet_frame({1>>player->get_spritesheet_col(), 0});}
 
@@ -100,7 +117,7 @@ int main()
     }
 
     std::for_each(characters.begin(), characters.end(), [](game_character* entity) { delete entity; });
-    std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { delete tile; });
+    UnloadTexture(current_spritesheet);
     
     CloseWindow();
     return 0;

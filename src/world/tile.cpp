@@ -1,7 +1,7 @@
 #include "tile.h"
 
 tile::tile(
-    std::string texture_path,
+    Texture2D* sprite_sheet,
     int x,
     int y,
     const window_config& screen,
@@ -10,17 +10,17 @@ tile::tile(
     std::array<float, 2> sprite_scale
 )
 {
-    this->sprite_sheet = LoadTexture(texture_path.c_str());
+    this->sprite_sheet = sprite_sheet;
     this->rotation = 0.0f;
     this->sprite_dim = (float)world_grid_size;
-    set_spritesheet_frame(spritesheet_pos);
-    this->source_rec = { 0.0f, 0.0f, sprite_dim, sprite_dim };
+    this->current_spritesheet_pos = spritesheet_pos;
+    this->source_rec = { (float)spritesheet_pos.col * sprite_dim, (float)spritesheet_pos.row * sprite_dim, sprite_dim, sprite_dim };
     this->dest_rec = { sprite_scale[0]*2+x*sprite_scale[0]*sprite_dim, sprite_scale[1]*2+y*sprite_scale[1]*sprite_dim, sprite_dim*sprite_scale[0], sprite_dim*sprite_scale[1] }; // Sets the initial position of the tile
     this->origin = { sprite_dim, sprite_dim };
 }
 
 tile::tile(
-    std::string texture_path,
+    Texture2D* sprite_sheet,
     int x,
     int y,
     const window_config& screen,
@@ -30,11 +30,11 @@ tile::tile(
     float rotation
 )
 {
-    this->sprite_sheet = LoadTexture(texture_path.c_str());
+    this->sprite_sheet = sprite_sheet;
     this->rotation = rotation;
     this->sprite_dim = (float)world_grid_size;
-    set_spritesheet_frame(spritesheet_pos);
-    this->source_rec = { 0.0f, 0.0f, sprite_dim, sprite_dim };
+    this->current_spritesheet_pos = spritesheet_pos;
+    this->source_rec = { (float)spritesheet_pos.col * sprite_dim, (float)spritesheet_pos.row * sprite_dim, sprite_dim, sprite_dim };
     this->dest_rec = { x*sprite_scale[0]*sprite_dim, y*sprite_scale[1]*sprite_dim, sprite_dim*sprite_scale[0], sprite_dim*sprite_scale[1] }; // Sets the initial position of the tile
     this->origin = { sprite_dim, sprite_dim };
 }
@@ -42,7 +42,7 @@ tile::tile(
  // Class Functions
 void tile::draw()
 {
-    DrawTexturePro(sprite_sheet, source_rec, dest_rec, origin, rotation, WHITE);
+    DrawTexturePro(*sprite_sheet, source_rec, dest_rec, origin, rotation, WHITE);
 }
 
 void tile::set_rotation(float rotation_angle)
@@ -92,7 +92,7 @@ float tile::get_y_coord()
 // Getters for raylib based character attributes
 Texture2D tile::get_texture()
 {
-    return this->sprite_sheet;
+    return *this->sprite_sheet;
 }
 
 Rectangle tile::get_src_rect()
@@ -108,16 +108,4 @@ Rectangle tile::get_dest_rect()
 Vector2 tile::get_origin()
 {
     return this->origin;
-}
-
-// Unloader(s)
-void tile::unload_tile()
-{
-    UnloadTexture(sprite_sheet);
-}
-
-// Destructor
-tile::~tile()
-{
-    unload_tile();
 }
