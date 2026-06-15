@@ -12,7 +12,7 @@
 #include <array>
 #include <math.h>
 #include "game_window.h"
-#include "game_character.h"
+#include "entity.h"
 #include "tile.h"
 
 int main()
@@ -31,8 +31,8 @@ int main()
 
     std::array<float, 2> sprite_scale = {1.0f, 1.0f};
 
-    std::vector<game_character*> characters = { 
-        new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size)
+    std::vector<entity*> entities = { 
+        new entity("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size)
     };
     
     Texture2D current_spritesheet = LoadTexture("resources/textures/spritesheets/test_spritesheet.png");
@@ -44,7 +44,7 @@ int main()
 
     int current_char = 0;
 
-    game_character* player = characters[current_char];
+    entity* player = entities[current_char];
 
     //Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
 
@@ -54,16 +54,13 @@ int main()
 
     // Camera Initialization
     Camera2D camera = { 0 };
-    camera.target = { player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), player->get_bounding_rect_y() };
+    camera.target = { 
+        player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), 
+        player->get_bounding_rect_y()-(player->get_sprite_height()*0.5f)
+    };
     camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f };
     camera.rotation = 0.0f;
     camera.zoom = default_zoom;
-
-    /* Center Each character on the screen (based on their sprite size)
-    std::for_each(characters.begin(), characters.end(), [game_window](game_character& entity) 
-        { entity.set_pos((game_window.width / 2 - entity.get_entity_width()), (game_window.height / 2 - entity.get_entity_height())); }
-    );
-    */
 
     float last_time = GetFrameTime();
 
@@ -72,22 +69,24 @@ int main()
         BeginDrawing();
         ClearBackground(default_bg);
         
-        camera.target = { player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), player->get_bounding_rect_y() };
+        camera.target = { 
+            player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), 
+            player->get_bounding_rect_y()-(player->get_sprite_height()*0.5f)
+        };
 
         // Draw all objects for the world in camera
         BeginMode2D(camera);
-            Vector2 mouse_world_pos = GetMousePosition();
             std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
 
             player->draw();
         EndMode2D();
 
-        std::string mouse_pos = std::to_string(mouse_world_pos.x) + " " + std::to_string(mouse_world_pos.y);
-
         std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
+        std::string zoom_str = std::to_string(camera.zoom);
+
         DrawText("Character Coordinates", 20, 20, 20, WHITE);
         DrawText(coords.c_str(), 20, 60, 20, WHITE);
-        DrawText(mouse_pos.c_str(), 20, 100, 20, WHITE);
+        DrawText(zoom_str.c_str(), 20, 100, 20, WHITE);
         DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 120, 20, WHITE);
         
         if (IsKeyDown(KEY_A))
@@ -102,11 +101,13 @@ int main()
         if (IsKeyDown(KEY_R))
         {player->set_pos(0, 0);}
 
-        // Camera Reset
+        // Camera Controls
+        if (IsKeyPressed(KEY_O))
+        { camera.zoom += 1.0f; }
+        if (IsKeyPressed(KEY_P))
+        { camera.zoom -= 1.0f; }
         if (IsKeyPressed(KEY_I))
-        { 
-            camera.zoom = default_zoom*(float)GetScreenHeight()/game_window.height;
-        }
+        { camera.zoom = default_zoom*(float)GetScreenHeight()/game_window.height; }
         
         // Toggle Full Screen
         if (IsKeyPressed(KEY_F4))
@@ -123,7 +124,7 @@ int main()
         EndDrawing();
     }
 
-    std::for_each(characters.begin(), characters.end(), [](game_character* entity) { delete entity; });
+    std::for_each(entities.begin(), entities.end(), [](entity* entity) { delete entity; });
     UnloadTexture(current_spritesheet);
     
     CloseWindow();

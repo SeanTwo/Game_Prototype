@@ -10,7 +10,7 @@ find_package(raylib REQUIRED)
 
 add_executable(origin
     src/main.cpp
-    src/characters/abstract/game_character.cpp
+    src/characters/abstract/entity.cpp
     src/world/tile.cpp
 )
 

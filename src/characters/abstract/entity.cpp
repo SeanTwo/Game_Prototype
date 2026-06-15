@@ -1,7 +1,7 @@
-#include "game_character.h"
+#include "entity.h"
 
 //Public Constructor(s)
-game_character::game_character(
+entity::entity(
     std::string texture_path,
     Vector2 initial_position,
     const window_config& screen,
@@ -26,35 +26,35 @@ game_character::game_character(
 }
 
 //Private Functions
-void game_character::set_spritesheet_pos(float x, float y)
+void entity::set_spritesheet_pos(float x, float y)
 {
     source_rec.x = x;
     source_rec.y = y;
 }
 
-void game_character::normalize_coordinates()
+void entity::normalize_coordinates()
 {
     this->x = dest_rec.x/world_grid_size;
     this->y = dest_rec.y/world_grid_size;
 }
 
 //Public Functions
-void game_character::draw()
+void entity::draw()
 {
     DrawTexturePro(char_texture, source_rec, dest_rec, origin, rotation, WHITE);
 }
 
-void game_character::rotate()
+void entity::rotate()
 {
     (int)rotation++;
 }
 
-void game_character::set_rotation(float rotation_angle)
+void entity::set_rotation(float rotation_angle)
 {
     rotation = rotation_angle;
 }
 
-void game_character::move(direction dir, float speed, float dt)
+void entity::move(direction dir, float speed, float dt)
 {
     float movement = speed * dt * world_grid_size;
     switch (dir) {
@@ -75,109 +75,109 @@ void game_character::move(direction dir, float speed, float dt)
     normalize_coordinates();
 }
 
-void game_character::set_pos(float x, float y)
+void entity::set_pos(float x, float y)
 {
     dest_rec.x = x*world_grid_size;
     dest_rec.y = y*world_grid_size;
     normalize_coordinates();
 }
 
-void game_character::set_spritesheet_frame(sprite_matrix new_sprite_pos)
+void entity::set_spritesheet_frame(sprite_matrix new_sprite_pos)
 {
     this->current_spritesheet_pos = new_sprite_pos;
     set_spritesheet_pos(sprite_width * new_sprite_pos.col, sprite_height * new_sprite_pos.row);
 }
 
 // Getters
-sprite_matrix game_character::get_spritesheet_pos()
+sprite_matrix entity::get_spritesheet_pos()
 {
     return current_spritesheet_pos;
 }
 
-int game_character::get_spritesheet_row()
+int entity::get_spritesheet_row()
 {
     return current_spritesheet_pos.row;
 }
 
-int game_character::get_spritesheet_col()
+int entity::get_spritesheet_col()
 {
     return current_spritesheet_pos.col;
 }
 
-float game_character::get_x_coord()
+float entity::get_x_coord()
 {
     return x;
 }
 
-float game_character::get_y_coord()
+float entity::get_y_coord()
 {
     return y;
 }
 
 // Getters for raylib focused character attributes
-Texture2D game_character::get_texture()
+Texture2D entity::get_texture()
 {
     return char_texture;
 }
 
-Rectangle game_character::get_src_rect()
+Rectangle entity::get_src_rect()
 {
     return source_rec;
 }
 
-Rectangle game_character::get_dest_rect()
+Rectangle entity::get_dest_rect()
 {
     return dest_rec;
 }
 
-Vector2 game_character::get_origin()
+Vector2 entity::get_origin()
 {
    return origin;
 }
 
-float game_character::get_rotation()
+float entity::get_rotation()
 {
     return rotation;
 }
 
-float game_character::get_sprite_width()
+float entity::get_sprite_width()
 {
     return sprite_width;
 }
 
-float game_character::get_sprite_height()
+float entity::get_sprite_height()
 {
     return sprite_height;
 }
 
-float game_character::get_bounding_rect_x()
+float entity::get_bounding_rect_x()
 {
     return dest_rec.x;
 }
 
-float game_character::get_bounding_rect_y()
+float entity::get_bounding_rect_y()
 {
     return dest_rec.y;
 }
 
-float& game_character::get_bounding_rect_ref_x()
+float& entity::get_bounding_rect_ref_x()
 {
     return dest_rec.x;
 }
 
-float& game_character::get_bounding_rect_ref_y()
+float& entity::get_bounding_rect_ref_y()
 {
     return dest_rec.y;
 }
 
 // Unloader(s)
-void game_character::unload_character()
+void entity::unload_character()
 {
     UnloadTexture(char_texture);
 }
 
 // Destructor
-game_character::~game_character()
+entity::~entity()
 {
     unload_character();
 }

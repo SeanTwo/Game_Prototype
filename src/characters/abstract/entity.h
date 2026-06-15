@@ -5,7 +5,7 @@
 #include "direction.h"
 #include "sprite_matrix.h"
 
-class game_character
+class entity
 {
     private:
         Rectangle source_rec;
@@ -26,7 +26,7 @@ class game_character
 
     public:
         // Constructors
-        game_character(
+        entity(
             std::string texture_path,
             Vector2 initial_position,
             const window_config& screen,
@@ -88,5 +88,5 @@ class game_character
         void unload_character();
 
         // Destructor
-        ~game_character();
+        ~entity();
 };
