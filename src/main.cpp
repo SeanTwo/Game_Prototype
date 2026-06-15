@@ -89,13 +89,13 @@ int main()
         DrawText(zoom_str.c_str(), 20, 100, 20, WHITE);
         DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 120, 20, WHITE);
         
-        if (IsKeyDown(KEY_A))
+        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
         {player->move(left, speed, GetFrameTime());}
-        if (IsKeyDown(KEY_D))
+        else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
         {player->move(right, speed, GetFrameTime());}
-        if (IsKeyDown(KEY_S))
+        else if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
         {player->move(down, speed, GetFrameTime());}
-        if (IsKeyDown(KEY_W))
+        else if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
         {player->move(up, speed, GetFrameTime());}
 
         if (IsKeyDown(KEY_R))
