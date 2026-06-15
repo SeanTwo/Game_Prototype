@@ -35,7 +35,7 @@ tile::tile(
     this->sprite_dim = (float)world_grid_size;
     set_spritesheet_frame(spritesheet_pos);
     this->source_rec = { 0.0f, 0.0f, sprite_dim, sprite_dim };
-    this->dest_rec = { sprite_scale[0]*2+x*sprite_scale[0]*sprite_dim, sprite_scale[1]*2+y*sprite_scale[1]*sprite_dim, sprite_dim*sprite_scale[0], sprite_dim*sprite_scale[1] }; // Sets the initial position of the tile
+    this->dest_rec = { x*sprite_scale[0]*sprite_dim, y*sprite_scale[1]*sprite_dim, sprite_dim*sprite_scale[0], sprite_dim*sprite_scale[1] }; // Sets the initial position of the tile
     this->origin = { sprite_dim, sprite_dim };
 }
 

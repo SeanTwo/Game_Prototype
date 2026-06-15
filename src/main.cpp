@@ -32,7 +32,6 @@ int main()
 
     std::vector<game_character*> characters = { 
         new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size),
-        new game_character("resources/textures/characters/slime_yellow.png", {0.0f, 0.0f}, game_window, sprite_scale, 2, 12, 9, world_grid_size)
     };
 
     std::vector<tile*> tiles = { 
