@@ -29,7 +29,7 @@ int main()
     Color default_bg = {0, 0, 0, 255};
     int world_grid_size = 16; // The size of a single tile in the world in pixels
 
-    std::array<float, 2> sprite_scale = {4.0f, 4.0f};
+    std::array<float, 2> sprite_scale = {1.0f, 1.0f};
 
     std::vector<game_character*> characters = { 
         new game_character("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size)
@@ -48,13 +48,16 @@ int main()
 
     //Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
 
-    const int speed = 10.0f;
+    // Controls player Speed
+    const int speed = 4.0f;
+    const int default_zoom = 4.0f;
 
+    // Camera Initialization
     Camera2D camera = { 0 };
     camera.target = { player->get_bounding_rect_x() + 20.0f, player->get_bounding_rect_y() + 20.0f };
     camera.offset = { game_window.width*0.5f, game_window.height*0.5f };
     camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera.zoom = default_zoom;
 
     /* Center Each character on the screen (based on their sprite size)
     std::for_each(characters.begin(), characters.end(), [game_window](game_character& entity) 
@@ -82,6 +85,7 @@ int main()
         DrawText("Character Coordinates", 20, 20, 20, WHITE);
         DrawText(coords.c_str(), 20, 60, 20, WHITE);
         DrawText(std::to_string(camera.zoom).c_str(), 20, 100, 20, WHITE);
+        DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 120, 20, WHITE);
         
         if (IsKeyDown(KEY_A))
         {player->move(left, speed, GetFrameTime());}
@@ -95,20 +99,13 @@ int main()
         if (IsKeyDown(KEY_R))
         {player->set_pos(0, 0);}
 
-        // Camera controls
-        if (IsKeyDown(KEY_P))
-        {
-            if(camera.zoom < 6.0f)
-            {camera.zoom += 0.1f;}
-        }
-        if (IsKeyDown(KEY_O))
-        {
-            if(camera.zoom > 0.1f)
-            {camera.zoom -= 0.1f;}
-        }
+        // Camera Reset
         if (IsKeyPressed(KEY_I))
-        { camera.zoom = 1.0f; }
-
+        { 
+            camera.zoom = default_zoom*(float)GetScreenHeight()/game_window.height;
+        }
+        
+        // Toggle Full Screen
         if (IsKeyPressed(KEY_F4))
         {
             ToggleFullscreen();
@@ -116,6 +113,7 @@ int main()
             { camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f }; }
             else // Set it back to default width and height
             { camera.offset = { game_window.width*0.5f, game_window.height*0.5f }; }
+            camera.zoom = default_zoom * (float)GetScreenHeight()/game_window.height;
         }
 
 
