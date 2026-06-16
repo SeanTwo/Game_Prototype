@@ -26,20 +26,22 @@ int main()
     SetTargetFPS(60);
     SetExitKey(KEY_NULL); // Disable default exit key (ESC) to prevent exiting using it
     
+    // World based rules and whatnot
     Color default_bg = {10, 10, 10, 255};
     int world_grid_size = 16; // The size of a single tile in the world in pixels
-
     std::array<float, 2> sprite_scale = {1.0f, 1.0f};
+    Vector2 initial_player_spawn = {1.0f, 0.0f};
 
-    std::vector<entity*> entities = { 
-        new entity("resources/textures/characters/slime.png", {0.0f, 0.0f}, game_window, sprite_scale, 1, 16, 16, world_grid_size)
-    };
-    
     Texture2D current_spritesheet = LoadTexture("resources/textures/spritesheets/test_spritesheet.png");
     std::vector<tile*> tiles = { 
         new tile(&current_spritesheet, 0, 0, game_window, world_grid_size, {0, 0}, sprite_scale),
         new tile(&current_spritesheet, 1, 0, game_window, world_grid_size, {1, 0}, sprite_scale),
         new tile(&current_spritesheet, 1, 1, game_window, world_grid_size, {1, 0}, sprite_scale),
+    };
+
+
+    std::vector<entity*> entities = { 
+        new entity("resources/textures/characters/slime.png", initial_player_spawn, game_window, sprite_scale, 1, 16, 16, world_grid_size)
     };
 
     int current_char = 0;
