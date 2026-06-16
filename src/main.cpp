@@ -72,37 +72,17 @@ int main()
     int monitor_height = GetMonitorHeight(monitor_id);
     int monitor_width = GetMonitorWidth(monitor_id);
     int border_bar_width = (monitor_width-(1.3333333333f*monitor_height))/2;
+    int viewport_width = monitor_width - (border_bar_width*2);
+
+    // Shader setup
+    Shader crt_shader = LoadShader(0, "resources/shaders/crt.fs");
+    bool shaderActive = true;
+    Image blankImage = GenImageColor(1, 1, {0,0,0,120});
+    Texture2D blankTexture = LoadTextureFromImage(blankImage);
+    UnloadImage(blankImage); // Free RAM
 
     while (!WindowShouldClose())
     {
-        BeginDrawing();
-        ClearBackground(default_bg);
-        
-        camera.target = { 
-            player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), 
-            player->get_bounding_rect_y()-(player->get_sprite_height()*0.5f)
-        };
-
-        // Draw all objects for the world in camera
-        BeginMode2D(camera);
-            std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
-
-            std::for_each(entities.begin(), entities.end(), [](entity* entity) { entity->draw(); });
-        EndMode2D();
-
-        // Draw black bars if fullscreen
-        if(IsWindowFullscreen()){
-            DrawRectangle(monitor_width-border_bar_width, 0, border_bar_width, monitor_height, BLACK);
-            DrawRectangle(0, 0, border_bar_width, monitor_height, BLACK);
-        }
-
-        std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
-        std::string zoom_str = std::to_string(camera.zoom);
-
-        DrawText("Character Coordinates", 20, 20, 20, WHITE);
-        DrawText(coords.c_str(), 20, 60, 20, WHITE);
-        DrawText(zoom_str.c_str(), 20, 100, 20, WHITE);
-        DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 120, 20, WHITE);
         
         if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
         {player->move(left, speed, GetFrameTime());}
@@ -112,7 +92,24 @@ int main()
         {player->move(down, speed, GetFrameTime());}
         else if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
         {player->move(up, speed, GetFrameTime());}
+        
+        // Toggle Full Screen
+        if (IsKeyPressed(KEY_F4))
+        {   
+            // Account for if game window has moved to another monitor to adjust full screen 4:3 blackbars
+            monitor_id = GetCurrentMonitor();
+            monitor_height = GetMonitorHeight(monitor_id);
+            monitor_width = GetMonitorWidth(monitor_id);
+            border_bar_width = (monitor_width-(1.3333333333f*monitor_height))/2;
+            viewport_width = monitor_width - (border_bar_width*2);
+            // Do the actual full screen toggle and adjustment
+            DrawRectangle(0, 0, monitor_width, monitor_height, BLACK); // Black out screen during transition to fullscreen
+            ToggleFullscreen();
+            camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f };
+            camera.zoom = default_zoom * (float)GetScreenHeight()/game_window.height;
+        }
 
+        //Developer Controls
         if (IsKeyDown(KEY_R))
         {player->set_pos(0, 0);}
 
@@ -123,30 +120,58 @@ int main()
         { camera.zoom -= 1.0f; }
         if (IsKeyPressed(KEY_I))
         { camera.zoom = default_zoom*(float)GetScreenHeight()/game_window.height; }
-        
-        // Toggle Full Screen
-        if (IsKeyPressed(KEY_F4))
-        {   
-            // Account for if game window has moved to another monitor to adjust full screen 4:3 blackbars
-            monitor_id = GetCurrentMonitor();
-            monitor_height = GetMonitorHeight(monitor_id);
-            monitor_width = GetMonitorWidth(monitor_id);
-            border_bar_width = (monitor_width-(1.3333333333f*monitor_height))/2;
-            // Do the actual full screen toggle and adjustment
-            DrawRectangle(0, 0, monitor_width, monitor_height, BLACK); // Black out screen during transition to fullscreen
-            ToggleFullscreen();
-            camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f };
-            camera.zoom = default_zoom * (float)GetScreenHeight()/game_window.height;
-        }
 
         if (IsKeyPressed(KEY_V))
         {player->set_spritesheet_frame({1>>player->get_spritesheet_col(), 0});}
+        
+        if (IsKeyPressed(KEY_F7))
+        { shaderActive = !shaderActive; }
+        // End Dev Controls
+
+        BeginDrawing();
+        ClearBackground(default_bg);
+        
+        camera.target = { 
+            player->get_bounding_rect_x()-(player->get_sprite_width()*0.5f), 
+            player->get_bounding_rect_y()-(player->get_sprite_height()*0.5f)
+        };
+        
+            // Draw all objects for the world in camera
+            BeginMode2D(camera);
+                std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
+
+                std::for_each(entities.begin(), entities.end(), [](entity* entity) { entity->draw(); });
+            EndMode2D();
+
+            // Draw black bars if fullscreen
+            if(IsWindowFullscreen()){
+                DrawRectangle(monitor_width-border_bar_width, 0, border_bar_width, monitor_height, BLACK);
+                DrawRectangle(0, 0, border_bar_width, monitor_height, BLACK);
+                
+                //Crt Shader across full viewport
+                if(shaderActive)
+                {
+                    BeginShaderMode(crt_shader);
+                        DrawTextureEx(blankTexture, { (float)border_bar_width, 0 }, 0.0f, (float)viewport_width, {255,255,255,120});
+                        //DrawRectangle(border_bar_width, 0, viewport_width, monitor_height, {0,0,0,150});
+                    EndShaderMode();
+                }
+            }
+
+        std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
+        std::string zoom_str = std::to_string(camera.zoom);
+
+        DrawText("Character Coordinates", 20, 20, 20, WHITE);
+        DrawText(coords.c_str(), 20, 60, 20, WHITE);
+        DrawText(zoom_str.c_str(), 20, 100, 20, WHITE);
+        DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 120, 20, WHITE);
 
         EndDrawing();
     }
 
     std::for_each(entities.begin(), entities.end(), [](entity* entity) { delete entity; });
     UnloadTexture(current_spritesheet);
+    UnloadTexture(blankTexture);
     
     CloseWindow();
     return 0;
