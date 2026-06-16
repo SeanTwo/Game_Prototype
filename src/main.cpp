@@ -26,7 +26,7 @@ int main()
     SetTargetFPS(60);
     SetExitKey(KEY_NULL); // Disable default exit key (ESC) to prevent exiting using it
     
-    Color default_bg = {0, 0, 0, 255};
+    Color default_bg = {10, 10, 10, 255};
     int world_grid_size = 16; // The size of a single tile in the world in pixels
 
     std::array<float, 2> sprite_scale = {1.0f, 1.0f};
@@ -64,6 +64,11 @@ int main()
 
     float last_time = GetFrameTime();
 
+    int monitor_id = GetCurrentMonitor();
+    int monitor_height = GetMonitorHeight(monitor_id);
+    int monitor_width = GetMonitorWidth(monitor_id);
+    int border_bar_width = (monitor_width-(1.3333333333f*monitor_height))/2;
+
     while (!WindowShouldClose())
     {
         BeginDrawing();
@@ -80,6 +85,12 @@ int main()
 
             player->draw();
         EndMode2D();
+
+        // Draw black bars if fullscreen
+        if(IsWindowFullscreen()){
+            DrawRectangle(monitor_width-border_bar_width, 0, border_bar_width, monitor_height, BLACK);
+            DrawRectangle(0, 0, border_bar_width, monitor_height, BLACK);
+        }
 
         std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
         std::string zoom_str = std::to_string(camera.zoom);
@@ -111,12 +122,18 @@ int main()
         
         // Toggle Full Screen
         if (IsKeyPressed(KEY_F4))
-        {
+        {   
+            // Account for if game window has moved to another monitor to adjust full screen 4:3 blackbars
+            monitor_id = GetCurrentMonitor();
+            monitor_height = GetMonitorHeight(monitor_id);
+            monitor_width = GetMonitorWidth(monitor_id);
+            border_bar_width = (monitor_width-(1.3333333333f*monitor_height))/2;
+            // Do the actual full screen toggle and adjustment
+            DrawRectangle(0, 0, monitor_width, monitor_height, BLACK); // Black out screen during transition to fullscreen
             ToggleFullscreen();
             camera.offset = { GetScreenWidth()*0.5f, GetScreenHeight()*0.5f };
             camera.zoom = default_zoom * (float)GetScreenHeight()/game_window.height;
         }
-
 
         if (IsKeyPressed(KEY_V))
         {player->set_spritesheet_frame({1>>player->get_spritesheet_col(), 0});}
