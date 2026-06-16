@@ -3,7 +3,6 @@
 // 2. If you also need to avoid other conflicts down the line, define this too:
 #define NOUSER
 
-#include <raylib.h>
 #include <string>
 #include <algorithm>
 #include <vector>
@@ -11,9 +10,12 @@
 #include <iostream>
 #include <array>
 #include <math.h>
+#include <raylib.h>
+#include <nlohmann/json.hpp>
 #include "game_window.h"
 #include "entity.h"
 #include "tile.h"
+using json = nlohmann::json;
 
 int main()
 {
@@ -85,7 +87,7 @@ int main()
         BeginMode2D(camera);
             std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
 
-            player->draw();
+            std::for_each(entities.begin(), entities.end(), [](entity* entity) { entity->draw(); });
         EndMode2D();
 
         // Draw black bars if fullscreen

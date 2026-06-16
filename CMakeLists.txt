@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(raylib_test VERSION 1.0 LANGUAGES CXX)
+project(Origin VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 find_package(raylib REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 add_executable(origin
     src/main.cpp
@@ -37,4 +38,8 @@ target_link_libraries(origin PRIVATE
 
 target_link_libraries(origin PRIVATE 
     raylib
+)
+
+target_link_libraries(origin PRIVATE
+    nlohmann_json::nlohmann_json
 )
