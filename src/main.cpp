@@ -8,7 +8,9 @@
 #include <vector>
 #include <format>
 #include <iostream>
+#include <fstream>
 #include <array>
+#include <unordered_map>
 #include <math.h>
 #include <raylib.h>
 #include <nlohmann/json.hpp>
@@ -28,19 +30,42 @@ int main()
     SetTargetFPS(60);
     SetExitKey(KEY_NULL); // Disable default exit key (ESC) to prevent exiting using it
     
+    //load json file
+    std::ifstream file("resources/maps/map1.json");
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return 1;
+    }
+
+    std::string json_text;
+    std::string line;
+    while (std::getline(file, line)) {
+        json_text = json_text + line + "\n" ;
+    }
+
+    json map_dat = json::parse(json_text);
+
     // World based rules and whatnot
-    Color default_bg = {10, 10, 10, 255};
-    int world_grid_size = 16; // The size of a single tile in the world in pixels
-    std::array<float, 2> sprite_scale = {1.0f, 1.0f};
-    Vector2 initial_player_spawn = {1.0f, 0.0f};
-
-    Texture2D current_spritesheet = LoadTexture("resources/textures/spritesheets/test_spritesheet.png");
-    std::vector<tile*> tiles = { 
-        new tile(&current_spritesheet, 0, 0, game_window, world_grid_size, {0, 0}, sprite_scale),
-        new tile(&current_spritesheet, 1, 0, game_window, world_grid_size, {1, 0}, sprite_scale),
-        new tile(&current_spritesheet, 1, 1, game_window, world_grid_size, {1, 0}, sprite_scale),
+    Color default_bg = {
+        map_dat["bg_r"],
+        map_dat["bg_g"],
+        map_dat["bg_b"],
+        map_dat["bg_a"]
     };
+    int world_grid_size = map_dat["world_grid_size"]; // The size of a single tile in the world in pixels
+    std::array<float, 2> sprite_scale = {map_dat["def_spr_scl_x"], map_dat["def_spr_scl_y"]};
+    Vector2 initial_player_spawn = {map_dat["spawn_x"], map_dat["spawn_y"]};
 
+
+    std::string tileset_sprite = map_dat["tileset_sprite_sheet"];
+    Texture2D current_spritesheet = LoadTexture(tileset_sprite.c_str());
+    std::vector<tile*> tiles;
+    for (auto& map_tile : map_dat["tiles"].items())
+    {
+        auto tile_doc = map_tile.value();
+        tiles.insert(tiles.end(), new tile(&current_spritesheet, tile_doc["x"], tile_doc["y"], game_window, world_grid_size, {tile_doc["tm_col"], tile_doc["tm_row"]}, sprite_scale));
+    }
 
     std::vector<entity*> entities = { 
         new entity("resources/textures/characters/slime.png", initial_player_spawn, game_window, sprite_scale, 1, 16, 16, world_grid_size)
@@ -76,7 +101,7 @@ int main()
 
     // Shader setup
     Shader crt_shader = LoadShader(0, "resources/shaders/crt.fs");
-    bool shaderActive = true;
+    bool shaderActive = false; // shader is disabled by default
     Image blankImage = GenImageColor(1, 1, {0,0,0,120});
     Texture2D blankTexture = LoadTextureFromImage(blankImage);
     UnloadImage(blankImage); // Free RAM
@@ -84,13 +109,13 @@ int main()
     while (!WindowShouldClose())
     {
         
-        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
+        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT) || GetGamepadAxisMovement(0, 0) < -0.8 )
         {player->move(left, speed, GetFrameTime());}
-        else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
+        else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT) || GetGamepadAxisMovement(0, 0) > 0.8)
         {player->move(right, speed, GetFrameTime());}
-        else if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
+        else if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN) || GetGamepadAxisMovement(0, 1) > 0.8)
         {player->move(down, speed, GetFrameTime());}
-        else if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
+        else if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || GetGamepadAxisMovement(0, 1) < -0.8)
         {player->move(up, speed, GetFrameTime());}
         
         // Toggle Full Screen
@@ -157,14 +182,23 @@ int main()
                     EndShaderMode();
                 }
             }
-
+        
+        // Dev Stats Drawing
         std::string coords = std::to_string(player->get_x_coord()) + " " + std::to_string(player->get_y_coord());
         std::string zoom_str = std::to_string(camera.zoom);
+        std::string gamepad_axis = std::to_string(GetGamepadAxisMovement(0, 0)) + " " + std::to_string(GetGamepadAxisMovement(0, 1));
+        std::string gamepads_available = "Gamepad 1: " + std::to_string(IsGamepadAvailable(0)) + " Gamepad 2: " + std::to_string(IsGamepadAvailable(1));
+        int font_size = 10;
 
-        DrawText("Character Coordinates", 20, 20, 20, WHITE);
-        DrawText(coords.c_str(), 20, 60, 20, WHITE);
-        DrawText(zoom_str.c_str(), 20, 100, 20, WHITE);
-        DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 120, 20, WHITE);
+        DrawText("Character Coordinates", 20, 20, font_size, WHITE);
+        DrawText(coords.c_str(), 20, 40, font_size, WHITE);
+        DrawText(zoom_str.c_str(), 20, 60, font_size, WHITE);
+        DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 80, font_size, WHITE);
+        DrawText(std::to_string(GetGamepadButtonPressed()).c_str(), 20, 100, font_size, WHITE);
+        DrawText(GetGamepadName(0), 20, 120, font_size, WHITE);
+        DrawText(std::to_string(GetGamepadAxisCount(0)).c_str(), 20, 140, font_size, WHITE);
+        DrawText(gamepad_axis.c_str(), 20, 160, font_size, WHITE);
+        DrawText(gamepads_available.c_str(), 20, 180, font_size, WHITE);
 
         EndDrawing();
     }
