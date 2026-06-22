@@ -68,17 +68,13 @@ int main()
     }
 
     std::vector<entity*> entities = { 
-        new entity("resources/textures/characters/slime.png", initial_player_spawn, game_window, sprite_scale, 1, 16, 16, world_grid_size)
+        new entity("resources/textures/characters/slime.png", initial_player_spawn, game_window, sprite_scale, 1, 16, 16, world_grid_size, 4.0f)
     };
 
     int current_char = 0;
 
     entity* player = entities[current_char];
 
-    //Rectangle dest_rec = { game_window.width*0.5f, game_window.height*0.5f, 16.0f*4.0f, 16.0f*4.0f };
-
-    // Controls player Speed
-    const float speed = 4.0f;
     const float default_zoom = 4.0f;
 
     // Camera Initialization
@@ -110,13 +106,13 @@ int main()
     {
         
         if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT) || GetGamepadAxisMovement(0, 0) < -0.8 )
-        {player->move(left, speed, GetFrameTime());}
+        {player->move(left, GetFrameTime());}
         else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT) || GetGamepadAxisMovement(0, 0) > 0.8)
-        {player->move(right, speed, GetFrameTime());}
+        {player->move(right, GetFrameTime());}
         else if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN) || GetGamepadAxisMovement(0, 1) > 0.8)
-        {player->move(down, speed, GetFrameTime());}
+        {player->move(down, GetFrameTime());}
         else if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP) || GetGamepadAxisMovement(0, 1) < -0.8)
-        {player->move(up, speed, GetFrameTime());}
+        {player->move(up, GetFrameTime());}
         
         // Toggle Full Screen
         if (IsKeyPressed(KEY_F4))
@@ -136,7 +132,7 @@ int main()
 
         //Developer Controls
         if (IsKeyDown(KEY_R))
-        {player->set_pos(0, 0);}
+        {player->set_pos(0, 1);}
 
         // Camera Controls
         if (IsKeyPressed(KEY_O))

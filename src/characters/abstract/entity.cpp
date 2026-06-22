@@ -1,4 +1,5 @@
 #include "entity.h"
+#include <math.h>
 
 //Public Constructor(s)
 entity::entity(
@@ -9,7 +10,8 @@ entity::entity(
     int chara_id,
     int width_pixels,
     int height_pixels,
-    int world_grid_size // World grid size is the size of a single tile in the world in pixels
+    int world_grid_size, // World grid size is the size of a single tile in the world in pixels
+    float speed // speed which the entity moves during the move() function
 )
 {
     this->char_texture = LoadTexture(texture_path.c_str());
@@ -22,6 +24,7 @@ entity::entity(
     this->chara_id = chara_id;
     this->world_grid_size = world_grid_size;
     this->current_spritesheet_pos = { 0, 0 }; // Always default to the first row and column of the spritesheet
+    this->speed = speed;
     normalize_coordinates();
 }
 
@@ -54,9 +57,9 @@ void entity::set_rotation(float rotation_angle)
     rotation = rotation_angle;
 }
 
-void entity::move(direction dir, float speed, float dt)
+void entity::move(direction dir, float dt)
 {
-    float movement = speed * dt * world_grid_size;
+    float movement = floor(speed * dt * world_grid_size); // Your basic movement equation with a floor of the final movement to keep it all pixel perfect (note will not allow the player to move if speed is to slow)
     switch (dir) {
         case direction::left:
             dest_rec.x -= movement;
@@ -77,8 +80,8 @@ void entity::move(direction dir, float speed, float dt)
 
 void entity::set_pos(float x, float y)
 {
-    dest_rec.x = x*world_grid_size;
-    dest_rec.y = y*world_grid_size;
+    dest_rec.x = (dest_rec.width/sprite_width)*2+(x*world_grid_size); // can derive original sprite scale for x using dest_rec width divided by sprite width and same for y using height allows positioning to be set on the middle of each tile
+    dest_rec.y = (dest_rec.height/sprite_height)*2+(y*world_grid_size);
     normalize_coordinates();
 }
 
@@ -86,6 +89,11 @@ void entity::set_spritesheet_frame(sprite_matrix new_sprite_pos)
 {
     this->current_spritesheet_pos = new_sprite_pos;
     set_spritesheet_pos(sprite_width * new_sprite_pos.col, sprite_height * new_sprite_pos.row);
+}
+
+void entity::set_speed(float speed)
+{
+    this->speed = speed;
 }
 
 // Getters

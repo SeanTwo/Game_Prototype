@@ -13,11 +13,12 @@ class entity
         Vector2 origin;
         sprite_matrix current_spritesheet_pos; // the current position of the spritesheet being used for animation
         float sprite_width; // width of a single frame in the spritesheet in pixels
-        float sprite_height; // height of a single frame in the spritesheet in pixels
+        float sprite_height; // height of a single regular frame in the spritesheet in pixels
         float rotation;
         int chara_id;
         float x;
         float y;
+        float speed;
         float world_grid_size;
         Texture2D char_texture;
 
@@ -34,7 +35,8 @@ class entity
             int chara_id,
             int width_pixels,
             int height_pixels,
-            int world_grid_size
+            int world_grid_size,
+            float speed
         );
 
         // Class Functions
@@ -44,11 +46,13 @@ class entity
 
         void set_rotation(float rotation_angle);
 
-        void move(direction dir, float speed, float dt);
+        void move(direction dir, float dt);
 
         void set_pos(float x, float y);
 
         void set_spritesheet_frame(sprite_matrix sprite_pos);
+        
+        void set_speed(float speed);
 
         // Getter Functions
         sprite_matrix get_spritesheet_pos();
@@ -60,6 +64,8 @@ class entity
         float get_x_coord();
 
         float get_y_coord();
+
+        float get_speed();
 
         // Getters for raylib based character attributes
         Texture2D get_texture();
