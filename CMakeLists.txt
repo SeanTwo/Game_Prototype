@@ -6,9 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-find_package(raylib REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
-
 add_executable(origin
     src/main.cpp
     src/characters/abstract/entity.cpp
@@ -28,6 +25,8 @@ target_include_directories(origin PRIVATE
     src/world
 )
 
+find_package(raylib REQUIRED)
+
 target_link_libraries(origin PRIVATE 
     raylib
     winmm.lib
@@ -40,6 +39,14 @@ target_link_libraries(origin PRIVATE
     raylib
 )
 
+find_package(nlohmann_json CONFIG REQUIRED)
+
 target_link_libraries(origin PRIVATE
     nlohmann_json::nlohmann_json
+)
+
+find_package(fmt CONFIG REQUIRED)
+
+target_link_libraries(origin PRIVATE 
+    fmt::fmt-header-only
 )

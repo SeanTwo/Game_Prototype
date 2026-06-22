@@ -6,14 +6,16 @@
 #include <string>
 #include <algorithm>
 #include <vector>
-#include <format>
 #include <iostream>
 #include <fstream>
 #include <array>
 #include <unordered_map>
 #include <math.h>
+
 #include <raylib.h>
 #include <nlohmann/json.hpp>
+#include <fmt/core.h>
+
 #include "game_window.h"
 #include "entity.h"
 #include "tile.h"
@@ -72,6 +74,9 @@ int main()
     };
 
     int current_char = 0;
+
+    //Overlay tile that moves with cursor
+    tile* temp_draw_tile = new tile(&current_spritesheet, 0, 0, game_window, world_grid_size, {0, 0}, sprite_scale);
 
     entity* player = entities[current_char];
 
@@ -141,13 +146,20 @@ int main()
         { camera.zoom -= 1.0f; }
         if (IsKeyPressed(KEY_I))
         { camera.zoom = default_zoom*(float)GetScreenHeight()/game_window.height; }
-
-        if (IsKeyPressed(KEY_V))
-        {player->set_spritesheet_frame({1>>player->get_spritesheet_col(), 0});}
         
-        if (IsKeyPressed(KEY_F7))
+        if (IsKeyPressed(KEY_F10))
         { shaderActive = !shaderActive; }
         // End Dev Controls
+
+        if (IsKeyPressed(KEY_F5))
+        { temp_draw_tile->set_spritesheet_frame({temp_draw_tile->get_spritesheet_col()+1, temp_draw_tile->get_spritesheet_row()}); }
+        if (IsKeyPressed(KEY_F6))
+        { temp_draw_tile->set_spritesheet_frame({temp_draw_tile->get_spritesheet_col()-1, temp_draw_tile->get_spritesheet_row()}); }
+        if (IsKeyPressed(KEY_F7))
+        { temp_draw_tile->set_spritesheet_frame({temp_draw_tile->get_spritesheet_col(), temp_draw_tile->get_spritesheet_row()+1}); }
+        if (IsKeyPressed(KEY_F8))
+        { temp_draw_tile->set_spritesheet_frame({temp_draw_tile->get_spritesheet_col(), temp_draw_tile->get_spritesheet_row()-1}); }
+
 
         BeginDrawing();
         ClearBackground(default_bg);
@@ -162,6 +174,8 @@ int main()
                 std::for_each(tiles.begin(), tiles.end(), [](tile* tile) { tile->draw(); });
 
                 std::for_each(entities.begin(), entities.end(), [](entity* entity) { entity->draw(); });
+
+                temp_draw_tile->draw({255,255,255,180});
             EndMode2D();
 
             // Draw black bars if fullscreen
@@ -186,15 +200,21 @@ int main()
         std::string gamepads_available = "Gamepad 1: " + std::to_string(IsGamepadAvailable(0)) + " Gamepad 2: " + std::to_string(IsGamepadAvailable(1));
         int font_size = 10;
 
+        // Transparent overlay tile 
+        Vector2 mouse_pos = GetScreenToWorld2D(GetMousePosition(), camera);
+        mouse_pos.y -= 2;
+        Vector2 mouse_snap = {
+            ceil(mouse_pos.x/world_grid_size),
+            ceil(mouse_pos.y/world_grid_size)
+        };
+        temp_draw_tile->set_pos(mouse_snap.x, mouse_snap.y);
+        
         DrawText("Character Coordinates", 20, 20, font_size, WHITE);
         DrawText(coords.c_str(), 20, 40, font_size, WHITE);
         DrawText(zoom_str.c_str(), 20, 60, font_size, WHITE);
-        DrawText(std::to_string(GetScreenHeight()).c_str(), 20, 80, font_size, WHITE);
-        DrawText(std::to_string(GetGamepadButtonPressed()).c_str(), 20, 100, font_size, WHITE);
-        DrawText(GetGamepadName(0), 20, 120, font_size, WHITE);
-        DrawText(std::to_string(GetGamepadAxisCount(0)).c_str(), 20, 140, font_size, WHITE);
-        DrawText(gamepad_axis.c_str(), 20, 160, font_size, WHITE);
-        DrawText(gamepads_available.c_str(), 20, 180, font_size, WHITE);
+        DrawText(fmt::format("x: {}, y: {}", (int)mouse_snap.x, (int)mouse_snap.y).c_str(), 20, 80, font_size, WHITE);
+        DrawText(fmt::format("raw mouse position data x: {}, y: {}", mouse_pos.x, mouse_pos.y).c_str(), 20, 100, font_size, WHITE);
+        DrawText(fmt::format("FPS: {}", GetFPS()).c_str(), 20, 120, font_size, WHITE);
 
         EndDrawing();
     }

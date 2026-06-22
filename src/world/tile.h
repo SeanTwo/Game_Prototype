@@ -41,6 +41,8 @@ class tile
          // Class Functions
         void draw();
 
+        void draw(Color color);
+
         void set_rotation(float rotation_angle);
 
         void set_pos(float x, float y);

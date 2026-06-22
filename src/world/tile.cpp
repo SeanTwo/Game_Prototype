@@ -45,6 +45,11 @@ void tile::draw()
     DrawTexturePro(*sprite_sheet, source_rec, dest_rec, origin, rotation, WHITE);
 }
 
+void tile::draw(Color color)
+{
+    DrawTexturePro(*sprite_sheet, source_rec, dest_rec, origin, rotation, color);
+}
+
 void tile::set_rotation(float rotation_angle)
 {
     this->rotation = rotation_angle;
@@ -52,8 +57,8 @@ void tile::set_rotation(float rotation_angle)
 
 void tile::set_pos(float x, float y)
 {
-    this->dest_rec.x = x;
-    this->dest_rec.y = y;
+    this->dest_rec.x = x*sprite_dim*(sprite_dim/dest_rec.width)+2;
+    this->dest_rec.y = y*sprite_dim*(sprite_dim/dest_rec.height)+2;
 }
 
 void tile::set_spritesheet_frame(sprite_matrix sprite_pos)
