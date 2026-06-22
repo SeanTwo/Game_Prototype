@@ -6,13 +6,25 @@
     "world_grid_size" : 16,
     "def_spr_scl_x" : 1.0,
     "def_spr_scl_y" : 1.0,
-    "spawn_x" : 1.0,
+    "spawn_x" : 0.0,
     "spawn_y" : 1.0,
     "tileset_sprite_sheet" : "resources/textures/spritesheets/test_spritesheet.png",
     "tiles" : [
         {
             "x" : 0,
             "y" : 0,
+            "tm_col" : 0,
+            "tm_row" : 0
+        },
+        {
+            "x" : -1,
+            "y" : 0,
+            "tm_col" : 0,
+            "tm_row" : 0
+        },
+        {
+            "x" : -1,
+            "y" : 1,
             "tm_col" : 0,
             "tm_row" : 0
         },
@@ -43,6 +55,30 @@
         {
             "x" : -1,
             "y" : -1,
+            "tm_col" : 1,
+            "tm_row" : 0
+        },
+        {
+            "x" : -2,
+            "y" : 0,
+            "tm_col" : 1,
+            "tm_row" : 0
+        },
+        {
+            "x" : -2,
+            "y" : 1,
+            "tm_col" : 1,
+            "tm_row" : 0
+        },
+        {
+            "x" : -1,
+            "y" : 2,
+            "tm_col" : 1,
+            "tm_row" : 0
+        },
+        {
+            "x" : 0,
+            "y" : 2,
             "tm_col" : 1,
             "tm_row" : 0
         }
